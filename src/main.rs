@@ -4,16 +4,14 @@ mod pages;
 use app::MangaApp;
 
 fn main() -> eframe::Result<()> {
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1400.0, 800.0])
-            .with_title("Manga Reader"),
-        ..Default::default()
-    };
+    let options = 
+        eframe::NativeOptions::default();
 
     eframe::run_native(
         "Manga Reader",
         options,
-        Box::new(|_| Ok(Box::new(MangaApp::default()))),
+        Box::new(|_| {
+            Ok(Box::new(MangaApp::default()))
+        }),
     )
 }

@@ -3,6 +3,11 @@ name = "manga-reader"
 version = "0.1.0"
 edition = "2024"
 
+
 [dependencies]
+
 eframe = "0.33"
 egui = "0.33"
+
+image = "0.25"
+rfd = "0.15"
