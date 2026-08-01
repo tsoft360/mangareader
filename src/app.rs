@@ -11,12 +11,14 @@ pub enum Screen {
 
 pub struct MangaApp {
     pub current_page: Screen,
+    pub current_manga: Option<String>,
 }
 
 impl Default for MangaApp {
     fn default() -> Self {
         Self {
             current_page: Screen::Home,
+            current_manga: Option::None,
         }
     }
 }
