@@ -1,6 +1,5 @@
 use crate::app;
-use app::MangaApp;
-use app::Screen;
+use app::{ MangaApp, Screen };
 use eframe::egui::*;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
