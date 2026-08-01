@@ -1,34 +1,47 @@
 use crate::app;
 use app::MangaApp;
-use eframe::egui::Context;
+use app::Screen;
+use eframe::egui::*;
 
-pub fn show(ctx: &Context, _app: &mut MangaApp) {
+pub fn show(ctx: &Context, app: &mut MangaApp) {
     egui::CentralPanel::default().show(ctx, |ui| {
         ui.vertical_centered(|ui| {
+            ui.add_space(250.0);
 
             ui.heading(
                 egui::RichText::new(
                     "📚 Manga Reader"
                 )
                 .size(40.0)
+                .strong(),
             );
 
-            ui.add_space(20.0);
+            ui.label("personal manga tracker and reader");
 
-            if ui.button("Continue Reading").clicked() {
-                app.page = Page::Reader;
+            ui.add_space(40.0);
+
+            ui.set_width(250.0);
+
+            if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
+                app.current_page = Screen::Reader;
+            }
+            
+            ui.add_space(10.0);
+
+            if ui.add_sized([250.0, 45.0], Button::new("Library")).clicked() {
+                app.current_page = Screen::Library;
             }
 
-            if ui.button("Library").clicked() {
-                app.page = Page::Library;
+            ui.add_space(10.0);
+
+            if ui.add_sized([250.0, 45.0], Button::new("Settings")).clicked() {
+                app.current_page = Screen::Settings;
             }
 
-            if ui.button("Open Folder").clicked() {
-                // Open folder dialog later
-            }
+            ui.add_space(10.0);
 
-            if ui.button("Settings").clicked() {
-                app.page = Page::Settings;
+            if ui.add_sized([250.0, 45.0], Button::new("Quit")).clicked() {
+                ctx.send_viewport_cmd(ViewportCommand::Close);
             }
         });
     });
