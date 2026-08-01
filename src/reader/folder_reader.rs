@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+let manga_folder = PathBuf::from("/home/dragon/Documents/books/manga")
+
 pub struct Chapter {
     pub name: String,
     pub pages: Vec<PathBuf>,
