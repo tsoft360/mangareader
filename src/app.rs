@@ -29,6 +29,7 @@ impl eframe::App for MangaApp {
         ctx: &egui::Context,
         _frame: &mut eframe::Frame
     ) {
+        egui_extras::install_image_loaders(ctx);
         pages::show(ctx, self);
     }
 }
