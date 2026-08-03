@@ -20,13 +20,13 @@ pub fn load_texture(
             &pixels,
         );
 
-    Ok(
+    return Ok(
         ctx.load_texture(
             path.display().to_string(),
             color_image,
             Default::default().
-        )
-    )
+        );
+    );
 }
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
