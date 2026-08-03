@@ -1,15 +1,33 @@
 use std::path::PathBuf;
 
-let manga_folder = PathBuf::from("/home/dragon/Documents/books/manga")
-
 pub struct Chapter {
     pub name: String,
     pub pages: Vec<PathBuf>,
 }
 
 impl Chapter {
-    pub fn load(&self) {
-        
+    pub fn load(path: &Path) -> std::io::Result<Self> {
+        let name = path
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .to_string();
+
+        let mut pages = Vec::new();
+
+        for entry in std::fs::read_dir(path)? {
+            let entry = entry?;
+            let image_path = entry.path();
+
+            if image_path.is_file() {
+                pages.push(image_path);
+            }
+        }
+
+        Ok(Self {
+            name,
+            pages,
+        })
     }
 }
 
@@ -19,25 +37,34 @@ pub struct Manga {
 }
 
 impl Manga {
-    pub fn load(&self) {
+    pub fn scan_manga_folder(path: impl AsRef<Path>) -> std::io::Result<Self> {
+        let path = path.as_ref();
 
-    }
-}
+        let title = path
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .to_string();
 
-pub struct FolderReader {
-    pub manga: Manga,
+        let mut chapters = Vec::new();
 
-    pub current_chapter: usize,
-    pub current_page: usize,
-}
+        for entry in fs::read_dir(path)? {
+            let entry = entry?;
+            let chapter_path = entry.path();
 
-impl FolderReader {
-    pub fn current_page_path(&self) -> Option<&Path> {
-        self.manga
-            .chapters
-            .get(self.current_chapter)?
-            .pages
-            .get(self.current_page)
-            .map(|p| p.as_path())
+            if !chapter_path.is_dir() {
+                continue;
+            }
+
+            let chapter = Chapter::load(&chapter_path)?;
+            chapters.push(chapter);
+        }
+
+        chapters.sort_by(|a, b| a.name.cmp(&b.name));
+
+        Ok(Self {
+            title,
+            chapters,
+        })
     }
 }
