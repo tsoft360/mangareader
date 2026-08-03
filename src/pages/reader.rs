@@ -1,8 +1,12 @@
 use crate::app;
+use crate::reader::folder_reader;
 use app::{ MangaApp, Screen };
 use eframe::egui::Context;
+use image::ImageReader;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
+    let manga = folder_reader::Manga::scan_manga_folder("/home/dragon/Documents/books/manga/Citrus");
+
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
             if ui.button("< Home").clicked() {
@@ -19,12 +23,45 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.heading(title);
         });
     });
-
     egui::CentralPanel::default().show(ctx, |ui| {
-        ui.centered_and_justified(|ui| {
-            ui.add(
-                egui::Image::new(egui::include_image!("/home/dragon/Documents/books/manga/Citrus/citrus_ch01/citrus_ch01_01.webp"))
-            )
-        });
+        let manga = manga.unwrap();
+        let chapter = &manga.chapters[manga.current_chapter];
+        let path = chapter.pages[chapter.current_page].to_string_lossy().to_string();
+
+
+        match ImageReader::open(path)
+            .unwrap()
+            .decode()
+        {
+            Ok(image) => {
+
+                let rgba = image.to_rgba8();
+
+                let size = [
+                    rgba.width() as usize,
+                    rgba.height() as usize,
+                ];
+
+                let color_image =
+                    egui::ColorImage::from_rgba_unmultiplied(
+                        size,
+                        &rgba,
+                    );
+
+                let texture =
+                    ctx.load_texture(
+                        "manga_page",
+                        color_image,
+                        egui::TextureOptions::default(),
+                    );
+
+                ui.image(&texture);
+            }
+
+            Err(e) => {
+                ui.label(format!("Error: {}", e));
+            }
+        }
+
     });
 }

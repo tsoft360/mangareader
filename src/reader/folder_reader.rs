@@ -1,8 +1,9 @@
-use std::path::PathBuf;
+use std::path::{ Path, PathBuf };
 
 pub struct Chapter {
     pub name: String,
     pub pages: Vec<PathBuf>,
+    pub current_page: usize,
 }
 
 impl Chapter {
@@ -24,9 +25,14 @@ impl Chapter {
             }
         }
 
+        pages.sort_by(|a, b| a.to_string_lossy().to_string().cmp(&b.to_string_lossy().to_string()));
+
+        let current_page = 0;
+
         Ok(Self {
             name,
             pages,
+            current_page,
         })
     }
 }
@@ -34,6 +40,7 @@ impl Chapter {
 pub struct Manga {
     pub title: String,
     pub chapters: Vec<Chapter>,
+    pub current_chapter: usize,
 }
 
 impl Manga {
@@ -48,7 +55,7 @@ impl Manga {
 
         let mut chapters = Vec::new();
 
-        for entry in fs::read_dir(path)? {
+        for entry in std::fs::read_dir(path)? {
             let entry = entry?;
             let chapter_path = entry.path();
 
@@ -62,9 +69,12 @@ impl Manga {
 
         chapters.sort_by(|a, b| a.name.cmp(&b.name));
 
+        let current_chapter = 0;
+
         Ok(Self {
             title,
             chapters,
+            current_chapter,
         })
     }
 }

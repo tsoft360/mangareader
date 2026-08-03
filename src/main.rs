@@ -1,5 +1,6 @@
 mod app;
 mod pages;
+mod reader;
 
 use app::MangaApp;
 
