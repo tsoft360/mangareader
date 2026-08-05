@@ -1,10 +1,9 @@
 use crate::app;
 use app::{ MangaApp, Screen };
 use eframe::egui::Context;
-use downcast_rs::Downcast;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
-    let reader = app.reader_state.as_any().unwrap();
+    let reader = app.reader_state;
 
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
@@ -23,6 +22,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         });
     });
     egui::CentralPanel::default().show(ctx, |ui| {
+        let Some(texture) = reader.texture;
         let available = ui.available_size();
 
         let image_size = texture.size_vec2();

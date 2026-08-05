@@ -2,7 +2,6 @@ use eframe::egui;
 
 use crate::pages;
 use crate::reader::folder_reader::Manga;
-use std::io::Result;
 use image::{ImageReader};
 
 pub enum Screen {
@@ -17,21 +16,21 @@ pub struct ReaderState {
     pub path: String,
     pub current_chapter: usize,
     pub current_page: usize,
-    pub first_load: usize,
     pub texture: Option<egui::TextureHandle>,
 }
 
 impl ReaderState {
-    pub fn new(path: String) -> Result<Self> {
-        let manga = Manga::scan_manga_folder(path)?;
+    pub fn new(path: String) -> Self {
+        let manga = Manga::scan_manga_folder(path).expect("ok something went wrong");
         let path = manga.chapters[0].pages[0].to_string_lossy().to_string();
 
-        Ok(Self {
+        Self {
             manga,
             path,
             current_chapter: 0,
             current_page: 0,
-        })
+            texture: Option::None,
+        }
     }
 
     pub fn next_page(&mut self) {
@@ -45,7 +44,7 @@ impl ReaderState {
         self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
     }
 
-    pub fn load_texture(&mut self, ctx: egui::Context) {
+    pub fn load_texture(&mut self, ctx: &egui::Context) {
         let image = ImageReader::open(self.path.clone()).unwrap().decode();
 
         let rgba = image.unwrap().to_rgba8();
@@ -62,11 +61,11 @@ impl ReaderState {
             );
 
         self.texture =
-            ctx.load_texture(
+            Some(ctx.load_texture(
                 "manga_page",
                 color_image,
                 egui::TextureOptions::default(),
-            );
+            ));
     }
 }
 
@@ -81,7 +80,7 @@ impl Default for MangaApp {
         Self {
             current_page: Screen::Home,
             current_manga: Option::None,
-            reader_state: ReaderState::new(""),
+            reader_state: ReaderState::new("".to_string()),
         }
     }
 }
