@@ -3,6 +3,7 @@ use eframe::egui;
 use crate::pages;
 use crate::reader::folder_reader::Manga;
 use std::io::Result;
+use image::{ImageReader};
 
 pub enum Screen {
     Home, 
@@ -13,24 +14,66 @@ pub enum Screen {
 
 pub struct ReaderState {
     pub manga: Manga,
+    pub path: String,
     pub current_chapter: usize,
     pub current_page: usize,
+    pub first_load: usize,
+    pub texture: Option<egui::TextureHandle>,
 }
 
 impl ReaderState {
     pub fn new(path: String) -> Result<Self> {
+        let manga = Manga::scan_manga_folder(path)?;
+        let path = manga.chapters[0].pages[0].to_string_lossy().to_string();
+
         Ok(Self {
-            manga: Manga::scan_manga_folder(path)?,
+            manga,
+            path,
             current_chapter: 0,
             current_page: 0,
         })
+    }
+
+    pub fn next_page(&mut self) {
+        self.current_page += 1;
+        self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+    }
+
+    pub fn next_chapter(&mut self) {
+        self.current_chapter += 1;
+        self.current_page = 0;
+        self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+    }
+
+    pub fn load_texture(&mut self, ctx: egui::Context) {
+        let image = ImageReader::open(self.path.clone()).unwrap().decode();
+
+        let rgba = image.unwrap().to_rgba8();
+
+        let size = [
+            rgba.width() as usize,
+            rgba.height() as usize,
+        ];
+
+        let color_image =
+            egui::ColorImage::from_rgba_unmultiplied(
+                size,
+                &rgba,
+            );
+
+        self.texture =
+            ctx.load_texture(
+                "manga_page",
+                color_image,
+                egui::TextureOptions::default(),
+            );
     }
 }
 
 pub struct MangaApp {
     pub current_page: Screen,
     pub current_manga: Option<String>,
-    pub reader_state: Option<ReaderState>,
+    pub reader_state: ReaderState,
 }
 
 impl Default for MangaApp {
@@ -38,7 +81,7 @@ impl Default for MangaApp {
         Self {
             current_page: Screen::Home,
             current_manga: Option::None,
-            reader_state: Option::None,
+            reader_state: ReaderState::new(""),
         }
     }
 }
