@@ -21,7 +21,7 @@ pub struct ReaderState {
 
 impl ReaderState {
     pub fn new(path: String) -> Self {
-        let manga = Manga::scan_manga_folder(path).expect("ok something went wrong");
+        let manga = Manga::scan_manga_folder(path).expect("ok");
         let path = manga.chapters[0].pages[0].to_string_lossy().to_string();
 
         Self {

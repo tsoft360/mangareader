@@ -64,8 +64,6 @@ impl Manga {
 
         chapters.sort_by(|a, b| a.name.cmp(&b.name));
 
-        let current_chapter = 0;
-
         Ok(Self {
             title,
             chapters,

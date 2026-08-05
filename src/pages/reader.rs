@@ -3,7 +3,7 @@ use app::{ MangaApp, Screen };
 use eframe::egui::Context;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
-    let reader = app.reader_state;
+    let mut reader = &mut app.reader_state;
 
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
@@ -22,20 +22,16 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         });
     });
     egui::CentralPanel::default().show(ctx, |ui| {
-        let Some(texture) = reader.texture;
-        let available = ui.available_size();
-
-        let image_size = texture.size_vec2();
-
-        let scale = (available.x / image_size.x)
-            .min(available.y / image_size.y);
-
-        let desired_size = image_size * scale;
-
         if let Some(texture) = &reader.texture {
+            let available = ui.available_size();
+            let image_size = texture.size_vec2();
+            let scale = (available.x / image_size.x)
+                .min(available.y / image_size.y);
+
+            let desired_size = image_size * scale;
             ui.centered_and_justified(|ui| {
                 ui.add(
-                    egui::Image::new(&texture)
+                    egui::Image::new(texture)
                         .fit_to_exact_size(desired_size)
                 );
             });
