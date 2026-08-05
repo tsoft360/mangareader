@@ -1,6 +1,7 @@
 use crate::app;
 use app::{ MangaApp, Screen };
 use eframe::egui::*;
+use crate::app::ReaderState;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -22,6 +23,10 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.set_width(250.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
+                app.reader_state = Some(
+                    ReaderState::new("/home/dragon/Documents/books/manga/Citrus".to_string())
+                        .expect("Failed to load manga"),
+                );
                 app.current_page = Screen::Reader;
             }
             

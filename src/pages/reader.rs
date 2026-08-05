@@ -5,7 +5,7 @@ use eframe::egui::Context;
 use image::ImageReader;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
-    let manga = folder_reader::Manga::scan_manga_folder("/home/dragon/Documents/books/manga/Citrus");
+    let reader = app.reader_state.as_mut().unwrap();
 
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
@@ -24,7 +24,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         });
     });
     egui::CentralPanel::default().show(ctx, |ui| {
-        let mut manga = manga.unwrap();
+        let mut manga = &reader.manga;
         let mut chapter = &manga.chapters[manga.current_chapter];
         let mut path = chapter.pages[chapter.current_page].to_string_lossy().to_string();
 

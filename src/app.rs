@@ -1,6 +1,8 @@
 use eframe::egui;
 
 use crate::pages;
+use crate::reader::folder_reader::Manga;
+use std::io::Result;
 
 pub enum Screen {
     Home, 
@@ -9,9 +11,26 @@ pub enum Screen {
     Settings,
 }
 
+pub struct ReaderState {
+    pub manga: Manga,
+    pub current_chapter: usize,
+    pub current_page: usize,
+}
+
+impl ReaderState {
+    pub fn new(path: String) -> Result<Self> {
+        Ok(Self {
+            manga: Manga::scan_manga_folder(path)?,
+            current_chapter: 0,
+            current_page: 0,
+        })
+    }
+}
+
 pub struct MangaApp {
     pub current_page: Screen,
     pub current_manga: Option<String>,
+    pub reader_state: Option<ReaderState>,
 }
 
 impl Default for MangaApp {
@@ -19,6 +38,7 @@ impl Default for MangaApp {
         Self {
             current_page: Screen::Home,
             current_manga: Option::None,
+            reader_state: Option::None,
         }
     }
 }
