@@ -24,9 +24,9 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         });
     });
     egui::CentralPanel::default().show(ctx, |ui| {
-        let manga = manga.unwrap();
-        let chapter = &manga.chapters[manga.current_chapter];
-        let path = chapter.pages[chapter.current_page].to_string_lossy().to_string();
+        let mut manga = manga.unwrap();
+        let mut chapter = &manga.chapters[manga.current_chapter];
+        let mut path = chapter.pages[chapter.current_page].to_string_lossy().to_string();
 
 
         match ImageReader::open(path)
@@ -55,7 +55,21 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                         egui::TextureOptions::default(),
                     );
 
-                ui.image(&texture);
+                let available = ui.available_size();
+
+                let image_size = texture.size_vec2();
+
+                let scale = (available.x / image_size.x)
+                    .min(available.y / image_size.y);
+
+                let desired_size = image_size * scale;
+                
+                ui.centered_and_justified(|ui| {
+                    ui.add(
+                        egui::Image::new(&texture)
+                            .fit_to_exact_size(desired_size)
+                    );
+                });
             }
 
             Err(e) => {
