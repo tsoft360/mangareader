@@ -5,7 +5,7 @@ import shutil
 import json
 
 SOURCE = Path("to_parse")
-DEST = Path("parsed")
+DEST = Path("/home/dragon/.koma/Library")
 DB = Path("komikku.db")
 
 def format_chapter(number):
