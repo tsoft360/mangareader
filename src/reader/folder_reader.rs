@@ -42,31 +42,38 @@ impl Manga {
     pub fn scan_manga_folder(path: impl AsRef<Path>) -> std::io::Result<Self> {
         let path = path.as_ref();
 
-        let title = path
-            .file_name()
-            .unwrap()
-            .to_string_lossy()
-            .to_string();
+        if path.file_name() == Option::None {
+            Ok(Self {
+                title: "".to_string(),
+                chapters: Vec::new(),
+            })
+        } else {
+            let title = path
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string();
 
-        let mut chapters = Vec::new();
+            let mut chapters = Vec::new();
 
-        for entry in std::fs::read_dir(path)? {
-            let entry = entry?;
-            let chapter_path = entry.path();
+            for entry in std::fs::read_dir(path)? {
+                let entry = entry?;
+                let chapter_path = entry.path();
 
-            if !chapter_path.is_dir() {
-                continue;
+                if !chapter_path.is_dir() {
+                    continue;
+                }
+
+                let chapter = Chapter::load(&chapter_path)?;
+                chapters.push(chapter);
             }
 
-            let chapter = Chapter::load(&chapter_path)?;
-            chapters.push(chapter);
+            chapters.sort_by(|a, b| a.name.cmp(&b.name));
+
+            Ok(Self {
+                title,
+                chapters,
+            })
         }
-
-        chapters.sort_by(|a, b| a.name.cmp(&b.name));
-
-        Ok(Self {
-            title,
-            chapters,
-        })
     }
 }

@@ -22,14 +22,24 @@ pub struct ReaderState {
 impl ReaderState {
     pub fn new(path: String) -> Self {
         let manga = Manga::scan_manga_folder(path).expect("ok");
-        let path = manga.chapters[0].pages[0].to_string_lossy().to_string();
-
-        Self {
-            manga,
-            path,
-            current_chapter: 0,
-            current_page: 0,
-            texture: Option::None,
+        if manga.title != "" {
+            let path = manga.chapters[0].pages[0].to_string_lossy().to_string();
+            Self {
+                manga,
+                path,
+                current_chapter: 0,
+                current_page: 0,
+                texture: Option::None,
+            }
+        } else {
+            let path = "".to_string();
+            Self {
+                manga,
+                path,
+                current_chapter: 0,
+                current_page: 0,
+                texture: Option::None,
+            }
         }
     }
 

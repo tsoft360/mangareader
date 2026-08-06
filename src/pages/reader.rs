@@ -3,7 +3,7 @@ use app::{ MangaApp, Screen };
 use eframe::egui::Context;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
-    let mut reader = &mut app.reader_state;
+    let reader = &mut app.reader_state;
 
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
