@@ -76,8 +76,4 @@ impl Manga {
             })
         }
     }
-
-    pub fn sort_by_komikku_database(&mut self, Vec<Chapter>) -> Vec<Chapter> {
-        
-    }
 }

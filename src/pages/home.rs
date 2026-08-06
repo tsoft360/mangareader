@@ -10,7 +10,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
             ui.heading(
                 egui::RichText::new(
-                    "📚 Manga Reader"
+                    "📚 Koma"
                 )
                 .size(40.0)
                 .strong(),
@@ -23,7 +23,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.set_width(250.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
-                app.reader_state = ReaderState::new("/home/dragon/.local/share/komikku/mangadex/You Look Better Crying".to_string());
+                app.reader_state = ReaderState::new("/home/dragon/Documents/projects/rust/mangareader/tools/parsed/Bloom into You".to_string());
                 app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }
