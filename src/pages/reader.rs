@@ -13,10 +13,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
             ui.separator();
 
-            let title = app
-                .current_manga
-                .as_deref()
-                .unwrap_or("No manga loaded");
+            let title = reader.manga.title.clone();
                 
             ui.heading(title);
         });
@@ -42,6 +39,12 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
         if scroll < 0.0 {
             reader.next_page();
+            reader.load_texture(ctx);
+        }
+
+        if scroll > 0.0 {
+            reader.previous_page();
+            reader.load_texture(ctx);
         }
     });
 }

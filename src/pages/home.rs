@@ -23,7 +23,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.set_width(250.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
-                app.reader_state = ReaderState::new("/home/dragon/Documents/books/manga/Citrus".to_string());
+                app.reader_state = ReaderState::new("/home/dragon/.local/share/komikku/mangadex/You Look Better Crying".to_string());
                 app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }

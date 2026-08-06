@@ -45,13 +45,34 @@ impl ReaderState {
 
     pub fn next_page(&mut self) {
         self.current_page += 1;
-        self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+        if self.current_page >= self.manga.chapters[self.current_chapter].pages.len() {
+            self.next_chapter();
+        } else {
+            self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+        }
+    }
+
+    pub fn previous_page(&mut self) {
+        if self.current_page <= 0 {
+            self.previous_chapter();
+        } else {
+            self.current_page -= 1;
+            self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+        }
     }
 
     pub fn next_chapter(&mut self) {
         self.current_chapter += 1;
         self.current_page = 0;
         self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+    }
+
+    pub fn previous_chapter(&mut self) {
+        if self.current_chapter != 0 {
+            self.current_chapter -= 1;
+            self.current_page = self.manga.chapters[self.current_chapter].pages.len() - 1;
+            self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
+        }
     }
 
     pub fn load_texture(&mut self, ctx: &egui::Context) {
@@ -81,7 +102,6 @@ impl ReaderState {
 
 pub struct MangaApp {
     pub current_page: Screen,
-    pub current_manga: Option<String>,
     pub reader_state: ReaderState,
 }
 
@@ -89,7 +109,6 @@ impl Default for MangaApp {
     fn default() -> Self {
         Self {
             current_page: Screen::Home,
-            current_manga: Option::None,
             reader_state: ReaderState::new("".to_string()),
         }
     }
@@ -101,7 +120,6 @@ impl eframe::App for MangaApp {
         ctx: &egui::Context,
         _frame: &mut eframe::Frame
     ) {
-        egui_extras::install_image_loaders(ctx);
         pages::show(ctx, self);
     }
 }
