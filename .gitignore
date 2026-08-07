@@ -1,4 +1,5 @@
 /target
 /tools/komikku.db
+/tools/komikku.db-shm
+/tools/komikku.db-wal
 /tools/to_parse
-/tools/parsed
