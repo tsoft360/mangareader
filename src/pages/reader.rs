@@ -13,9 +13,10 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
             ui.separator();
 
-            let title = reader.manga.title.clone();
+            let manga_title = reader.manga.title.clone();
+            let chapter_title = reader.manga.chapters[reader.current_chapter].name.clone();
                 
-            ui.heading(title);
+            ui.heading(format!("{manga_title} - {chapter_title}"));
         });
     });
     egui::CentralPanel::default().show(ctx, |ui| {

@@ -11,3 +11,6 @@ egui_extras = { version = "0.33", features = ["all_loaders"] }
 
 image = "0.25"
 rfd = "0.15"
+serde = "1.0.229"
+serde_json = "1.0.151"
+natord = "1"

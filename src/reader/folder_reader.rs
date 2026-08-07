@@ -1,4 +1,27 @@
 use std::path::{ Path, PathBuf };
+use std::fs;
+use serde::Deserialize;
+use std::io::Result;
+
+#[derive(Debug, Deserialize)]
+pub struct Metadata {
+    pub komikku_id: String,
+    pub number: String,
+    pub title: String,
+}
+
+pub fn load_metadata(path: impl AsRef<Path>) -> Result<Metadata> {
+    let json = fs::read_to_string(path)?;
+    let metadata: Metadata = serde_json::from_str(&json)?;
+    Ok(metadata)
+}
+
+fn is_image(path: &Path) -> bool {
+    matches!(
+        path.extension().and_then(|e| e.to_str()),
+        Some("jpg" | "jpeg" | "png" | "webp")
+    )
+}
 
 pub struct Chapter {
     pub name: String,
@@ -7,11 +30,9 @@ pub struct Chapter {
 
 impl Chapter {
     pub fn load(path: &Path) -> std::io::Result<Self> {
-        let name = path
-            .file_name()
-            .unwrap()
-            .to_string_lossy()
-            .to_string();
+        let metadata_path = path.join("chapter.json");
+        let metadata = load_metadata(metadata_path)?;
+        let name = metadata.title.clone();
 
         let mut pages = Vec::new();
 
@@ -19,12 +40,17 @@ impl Chapter {
             let entry = entry?;
             let image_path = entry.path();
 
-            if image_path.is_file() {
+            if image_path.is_file() && is_image(&image_path) {
                 pages.push(image_path);
             }
         }
 
-        pages.sort_by(|a, b| a.to_string_lossy().to_string().cmp(&b.to_string_lossy().to_string()));
+        pages.sort_by(|a, b| {
+            let a = a.file_stem().unwrap().to_str().unwrap();
+            let b = b.file_stem().unwrap().to_str().unwrap();
+
+            natord::compare(a, b)
+        });
 
         Ok(Self {
             name,
@@ -68,7 +94,12 @@ impl Manga {
                 chapters.push(chapter);
             }
 
-            chapters.sort_by(|a, b| a.name.cmp(&b.name));
+            chapters.sort_by(|a, b| {
+                let a = &a.name;
+                let b = &b.name;
+
+                natord::compare(&a, &b)
+            });
 
             Ok(Self {
                 title,

@@ -8,6 +8,30 @@ SOURCE = Path("to_parse")
 DEST = Path("/home/dragon/.koma/Library")
 DB = Path("komikku.db")
 
+mangas = [
+    # "Bloom into You"
+    "My Devilishly Sweet Girlfriend",
+    # "Vampeerz",
+    # "That Time I Was Blackmailed By the Class's Green Tea Bitch",
+    # "I Married My Female Friend",
+    # "You Look Better Crying",
+    # "Citrus"
+]
+
+def get_manga_id(name):
+    db = sqlite3.connect(DB)
+    cur = db.cursor()
+
+    cur.execute("""
+        SELECT id
+        FROM mangas
+        WHERE name=?
+    """, (name,))
+
+    id = cur.fetchall()
+    db.close()
+    return id
+
 def format_chapter(number):
     if "." in number:
         return "Ch" + number.replace(".", "_")
@@ -18,7 +42,7 @@ def get_chapters(manga_id):
     cur = db.cursor()
 
     cur.execute("""
-        SELECT slug, num, title
+        SELECT slug, rank, title
         FROM chapters
         WHERE manga_id=?
         AND downloaded=1
@@ -33,7 +57,7 @@ def get_chapters(manga_id):
 def write_chapter_metadata(path, slug, number, title):
     metadata = {
         "komikku_id": slug,
-        "number": number,
+        "number": str(number),
         "title": title
     }
 
@@ -61,7 +85,7 @@ def import_manga(manga_id, manga_name):
         if not old_path.exists():
             print("Missing: ", slug)
 
-        chapter_name = format_chapter(number)
+        chapter_name = format_chapter(f"{int(number) + 1}")
 
         new_path = dest_folder / chapter_name
 
@@ -82,9 +106,8 @@ def import_manga(manga_id, manga_name):
         )
 
 if __name__ == '__main__':
-    manga_id = 1
-
-    import_manga(
-        manga_id,
-        "Bloom into You"
-    )
+    for manga in mangas:
+        import_manga(
+            get_manga_id(manga)[0][0],
+            manga
+        )
