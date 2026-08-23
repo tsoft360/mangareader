@@ -1,4 +1,5 @@
 use crate::app;
+use crate::pages::library;
 use app::{ MangaApp, Screen };
 use eframe::egui::*;
 use crate::app::ReaderState;
@@ -31,6 +32,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.add_space(10.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Library")).clicked() {
+                app.library = library::scan_library("/home/dragon/.koma/Library");
                 app.current_page = Screen::Library;
             }
 

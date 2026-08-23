@@ -2,6 +2,7 @@ use eframe::egui;
 
 use crate::pages;
 use crate::reader::folder_reader::Manga;
+use crate::pages::library::LibraryEntry;
 use image::{ImageReader};
 
 pub enum Screen {
@@ -103,6 +104,7 @@ impl ReaderState {
 pub struct MangaApp {
     pub current_page: Screen,
     pub reader_state: ReaderState,
+    pub library: Vec<LibraryEntry>,
 }
 
 impl Default for MangaApp {
@@ -110,6 +112,7 @@ impl Default for MangaApp {
         Self {
             current_page: Screen::Home,
             reader_state: ReaderState::new("".to_string()),
+            library: Vec::new(),
         }
     }
 }
