@@ -1,5 +1,5 @@
 use crate::app;
-use app::{MangaApp, Screen};
+use app::{MangaApp, Screen, ReaderState};
 use eframe::egui;
 use std::path::{PathBuf, Path};
 
@@ -78,11 +78,20 @@ pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
                 manga.load_cover(ctx).ok();
 
                 if let Some(texture) = &manga.cover {
-                    ui.add(
-                        egui::Image::new(texture)
-                            .fit_to_exact_size(egui::vec2(150.0, 225.0)),
+                    let response = ui.add(
+                        egui::Button::image(
+                            egui::Image::new(texture)
+                                .fit_to_exact_size(egui::vec2(150.0, 225.0)),
+                        )
                     );
+
+                    if response.clicked() {
+                        app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string());
+                        app.current_page = Screen::Reader;
+                        app.reader_state.load_texture(ctx);
+                    }
                 }
+
 
                 ui.label(&manga.title);
                 ui.end_row();
