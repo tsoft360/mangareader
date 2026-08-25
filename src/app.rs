@@ -102,13 +102,18 @@ impl ReaderState {
     }
 
     pub fn save_progress(&self) {
+        let manga_path = self.path
+            .to_path_buf()
+            .parent()
+            .and_then(|chapter| chapter.parent())
+            .unwrap();
         let progress = ReadingProgress {
-            manga_path: self.manga.path.clone(),
+            manga_path: manga_path,
             chapter: self.current_chapter,
             page: self.current_page
-        }
+        };
 
-        if let Err(error) = progress::save(&progress) {
+        if let Err(error) = progress::save(progress) {
             eprintln!("Failed to save reading progress: {error}");
         }
     }
@@ -141,10 +146,8 @@ impl eframe::App for MangaApp {
 
     fn on_exit(
         &mut self,
-        _gl: Option<&eframe::glow::Context>.
+        _gl: Option<&eframe::glow::Context>,
     ) {
-        if let Some(reader) = &self.reader {
-            reader.save_progress();
-        }
+        &self.reader_state.save_progress();
     }
 }

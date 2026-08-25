@@ -1,6 +1,7 @@
 mod app;
 mod pages;
 mod reader;
+mod progress;
 
 use app::MangaApp;
 

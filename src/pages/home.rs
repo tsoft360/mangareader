@@ -3,6 +3,7 @@ use crate::pages::library;
 use app::{ MangaApp, Screen };
 use eframe::egui::*;
 use crate::app::ReaderState;
+use crate::progress;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -24,7 +25,10 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.set_width(250.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
-                app.reader_state = ReaderState::new("/home/dragon/.koma/Library/My Devilishly Sweet Girlfriend".to_string());
+                let progress = progress::load()?;
+                app.reader_state = ReaderState::new(progress.manga_path.to_string_lossy().to_string());
+                app.reader_state.current_chapter = progress.chapter;
+                app.reader_state.current_page = progress.page;
                 app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }
