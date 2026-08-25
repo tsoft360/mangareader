@@ -9,6 +9,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         ui.horizontal(|ui| {
             if ui.button("< Home").clicked() {
                 app.current_page = Screen::Home;
+                reader.save_progress();
             }
 
             ui.separator();

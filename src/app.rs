@@ -3,6 +3,7 @@ use eframe::egui;
 use crate::pages;
 use crate::reader::folder_reader::Manga;
 use crate::pages::library::LibraryEntry;
+use crate::progress::{self, ReadingProgress};
 use image::{ImageReader};
 
 pub enum Screen {
@@ -99,6 +100,18 @@ impl ReaderState {
                 egui::TextureOptions::default(),
             ));
     }
+
+    pub fn save_progress(&self) {
+        let progress = ReadingProgress {
+            manga_path: self.manga.path.clone(),
+            chapter: self.current_chapter,
+            page: self.current_page
+        }
+
+        if let Err(error) = progress::save(&progress) {
+            eprintln!("Failed to save reading progress: {error}");
+        }
+    }
 }
 
 pub struct MangaApp {
@@ -124,5 +137,14 @@ impl eframe::App for MangaApp {
         _frame: &mut eframe::Frame
     ) {
         pages::show(ctx, self);
+    }
+
+    fn on_exit(
+        &mut self,
+        _gl: Option<&eframe::glow::Context>.
+    ) {
+        if let Some(reader) = &self.reader {
+            reader.save_progress();
+        }
     }
 }

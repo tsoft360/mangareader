@@ -11,12 +11,16 @@ pub struct ReadingProgress {
     pub page: usize,
 }
 
-pub save(progress: ReadingProgress) -> Result<(), Box<dyn std::error::Error>> {
+pub fn save(progress: ReadingProgress) -> Result<(), Box<dyn std::error::Error>> {
     let json = serde_json::to_string_pretty(progress)?;
 
-    let data_dir = dirs::data_dir()?;
+    let mut data_dir = dirs::data_dir()
+        .ok_or("Could not find data directory")?;
 
-    fs::write(PROGRESS_FILE, json)?;
+    data_dir.push("koma");
+    fs::create_dir_all(&data_dir)?;
+    data_dir.push(PROGRESS_FILE);
+    fs::write(data_dir, json)?;
 
     Ok(())
 }
