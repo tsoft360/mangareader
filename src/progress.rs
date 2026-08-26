@@ -34,7 +34,7 @@ pub fn load() -> Result<ReadingProgress, Box<dyn std::error::Error>> {
     
     let file = fs::read_to_string(data_dir)?;
 
-    let progress: ReadingProgress = serde_json::from_str(&file);
+    let progress: ReadingProgress = serde_json::from_str(&file)?;
 
     Ok(progress)
 }

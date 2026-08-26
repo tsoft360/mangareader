@@ -5,6 +5,18 @@ use eframe::egui::Context;
 pub fn show(ctx: &Context, app: &mut MangaApp) {
     let reader = &mut app.reader_state;
 
+
+    let scroll = ctx.input(|i| i.raw_scroll_delta.y);
+    
+
+    if scroll < 0.0 {
+        reader.next_page(ctx);
+    }
+
+    if scroll > 0.0 {
+        reader.previous_page(ctx);
+    }
+
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
             if ui.button("< Home").clicked() {
@@ -34,19 +46,6 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                         .fit_to_exact_size(desired_size)
                 );
             });
-        }
-
-        let scroll = ctx.input(|i| i.raw_scroll_delta.y);
-        
-
-        if scroll < 0.0 {
-            reader.next_page();
-            reader.load_texture(ctx);
-        }
-
-        if scroll > 0.0 {
-            reader.previous_page();
-            reader.load_texture(ctx);
         }
     });
 }

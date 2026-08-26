@@ -25,10 +25,13 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             ui.set_width(250.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
-                let progress = progress::load()?;
-                app.reader_state = ReaderState::new(progress.manga_path.to_string_lossy().to_string());
-                app.reader_state.current_chapter = progress.chapter;
-                app.reader_state.current_page = progress.page;
+                let progress = progress::load().unwrap();
+                app.reader_state = ReaderState::new(
+                    progress.manga_path.to_string_lossy().to_string(), 
+                    progress.chapter, 
+                    progress.page
+                );
+                println!("{}", progress.page);
                 app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }

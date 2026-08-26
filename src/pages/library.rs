@@ -86,7 +86,7 @@ pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
                     );
 
                     if response.clicked() {
-                        app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string());
+                        app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0);
                         app.current_page = Screen::Reader;
                         app.reader_state.load_texture(ctx);
                     }
