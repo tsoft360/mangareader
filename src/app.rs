@@ -31,8 +31,8 @@ impl ReaderState {
             Self {
                 manga,
                 path,
-                current_chapter: 0,
-                current_page: 0,
+                current_chapter: chapter,
+                current_page: page,
                 texture: Option::None,
             }
         } else {
@@ -40,15 +40,14 @@ impl ReaderState {
             Self {
                 manga,
                 path,
-                current_chapter: chapter,
-                current_page: page,
+                current_chapter: 0,
+                current_page: 0,
                 texture: Option::None,
             }
         }
     }
 
     pub fn next_page(&mut self, ctx: &Context) {
-        println!("{}", self.current_page);
         self.current_page += 1;
         if self.current_page >= self.manga.chapters[self.current_chapter].pages.len() {
             self.next_chapter(ctx);

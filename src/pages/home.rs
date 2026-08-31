@@ -31,7 +31,6 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                     progress.chapter, 
                     progress.page
                 );
-                println!("{}", progress.page);
                 app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }
