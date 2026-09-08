@@ -50,9 +50,25 @@ impl EpubReader {
         loop {
             match reader.read_event()? {
                 Event::Empty(e) | Event::Start(e) => {
-                    
+                    if e.name().as_ref() == b"rootfile" {
+                        for attribute in e.attributes() {
+                            let attribute = attribute?;
+
+                            if attribute.key.as_ref() == b"full-path" {
+                                return Ok(
+                                    String::from_utf8(attribute.value.to_vec())?
+                                );
+                            }
+                        }
+                    }
                 }
+
+                Event::Eof => break,
+
+                _ => {}
             }
         }
     }
+
+    Err("Could not find OPF file".into())
 }
