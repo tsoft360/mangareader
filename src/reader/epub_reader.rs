@@ -1,9 +1,24 @@
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
+use scraper::{Html, Selector};
+
 use quick_xml::events::Event;
 use quick_xml::Reader;
 use zip::ZipArchive;
+
+fn html_to_text(html: &str) -> String {
+    let document = Html::parse_document(html);
+    let selector = Selector::parse("body").unwrap();
+
+    let mut text = String::new();
+
+    for body in document.select(&selector) {
+        text.push_str(&body.text().collect::<Vec<_>>().join(" "));
+    }
+
+    text
+}
 
 pub struct EpubReader {
     pub path: PathBuf,
@@ -37,6 +52,27 @@ impl EpubReader {
             chapters,
             current_page: 0,
         })
+    }
+
+    pub fn load_chapter(
+        &self,
+        chapter: usize,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let file = File::open(&self.path)?;
+        let mut archive = ZipArchive::new(file)?;
+
+        let chapter_path = &self.chapters[chapter];
+
+        let mut chapter_file = archive.by_name(chapter_path)?;
+
+        let mut html = String::new();
+
+        std::io::Read::read_to_string(
+            &mut chapter_file,
+            &mut html,
+        )?;
+
+        Ok(html_to_text(&html))
     }
 
     fn find_opf(
