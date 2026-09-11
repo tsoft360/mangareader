@@ -42,8 +42,6 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                 let epub = EpubReader::new(
                     "/home/dragon/Documents/books/manga/You.Bleed.Into.My.Colourless.World.epub"
                 );
-
-                println!("Pages: {}", epub.unwrap().pages.len());
             }
             
             ui.add_space(10.0);

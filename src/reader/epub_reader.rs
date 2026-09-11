@@ -7,7 +7,7 @@ use zip::ZipArchive;
 
 pub struct EpubReader {
     pub path: PathBuf,
-    pub pages: Vec<Vec<u8>>,
+    pub chapters: Vec<String>,
     pub current_page: usize,
 }
 
@@ -18,21 +18,23 @@ impl EpubReader {
         let file = File::open(&path)?;
         let mut archive = ZipArchive::new(file)?;
 
-        let opf_path = Self::find_opf(&mut archive)?;
+        let mut chapters = Vec::new();
 
-        println!("OPF: {}", opf_path);
+        for i in 0..archive.len() {
+            let file = archive.by_index(i)?;
 
-        let spine = Self::get_spine(&mut archive, &opf_path)?;
+            let name = file.name().to_string();
 
-        println!("Spine:");
-
-        for item in &spine {
-            println!("  {}", item);
+            if name.ends_with(".xhtml") || name.ends_with(".html") {
+                chapters.push(name);
+            }
         }
+
+        println!("Found {} XHTML files", chapters.len());
 
         Ok(Self {
             path,
-            pages: Vec::new(),
+            chapters,
             current_page: 0,
         })
     }
