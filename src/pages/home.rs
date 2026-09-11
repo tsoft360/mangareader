@@ -4,6 +4,7 @@ use app::{ MangaApp, Screen };
 use eframe::egui::*;
 use crate::app::ReaderState;
 use crate::progress;
+use crate::reader::epub_reader::EpubReader;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -33,6 +34,16 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                 );
                 app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
+            }
+
+            ui.add_space(10.0);
+
+            if ui.add_sized([250.0, 45.0], Button::new("test")).clicked() {
+                let epub = EpubReader::new(
+                    "/home/dragon/Documents/books/manga/You.Bleed.Into.My.Colourless.World.epub"
+                );
+
+                println!("Pages: {}", epub.unwrap().pages.len());
             }
             
             ui.add_space(10.0);

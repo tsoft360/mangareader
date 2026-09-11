@@ -18,11 +18,11 @@ impl EpubReader {
         let file = File::open(&path)?;
         let mut archive = ZipArchive::new(file)?;
 
-        let opf_path = find_opf(&mut archive)?;
+        let opf_path = Self::find_opf(&mut archive)?;
 
         println!("OPF: {}", opf_path);
 
-        let spine = get_spine(&mut archive, &opf_path)?;
+        let spine = Self::get_spine(&mut archive, &opf_path)?;
 
         println!("Spine:");
 
@@ -68,7 +68,87 @@ impl EpubReader {
                 _ => {}
             }
         }
+
+        Err("Could not find OPF file".into())
     }
 
-    Err("Could not find OPF file".into())
+    fn get_spine(
+        archive: &mut ZipArchive<File>,
+        opf_path: &str,
+    ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+        let mut opf = archive.by_name(opf_path)?;
+
+        let mut xml = String::new();
+        std::io::Read::read_to_string(&mut opf, &mut xml)?;
+
+        let mut reader = Reader::from_str(&xml);
+
+        let mut manifest = std::collections::HashMap::new();
+        let mut spine = Vec::new();
+
+        loop {
+            match reader.read_event()? {
+                Event::Empty(e) | Event::Start(e) => {
+                    match e.name().as_ref() {
+                        b"item" => {
+                            let mut id = None;
+                            let mut href = None;
+
+                            for attribute in e.attributes() {
+                                let attribute = attribute?;
+
+                                match attribute.key.as_ref() {
+                                    b"id" => {
+                                        id = Some(
+                                            String::from_utf8(
+                                                attribute.value.to_vec()
+                                            )?
+                                        );
+                                    }
+
+                                    b"href" => {
+                                        href = Some(
+                                            String::from_utf8(
+                                                attribute.value.to_vec()
+                                            )?
+                                        );
+                                    }
+
+                                    _ => {}
+                                }
+                            }
+
+                            if let (Some(id), Some(href)) = (id, href) {
+                                manifest.insert(id, href);
+                            }
+                        }
+
+                        b"itemref" => {
+                            for attribute in e.attributes() {
+                                let attribute = attribute?;
+
+                                if attribute.key.as_ref() == b"idref" {
+                                    let id = String::from_utf8(
+                                        attribute.value.to_vec()
+                                    )?;
+
+                                    if let Some(href) = manifest.get(&id) {
+                                        spine.push(href.clone());
+                                    }
+                                }        
+                            }
+                        }
+
+                        _ => {}
+                    }
+                }
+
+                Event::Eof => break,
+
+                _ => {}
+            }
+        }
+
+        Ok(spine)
+    }
 }
