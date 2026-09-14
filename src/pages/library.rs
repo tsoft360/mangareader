@@ -111,6 +111,8 @@ fn extract_cover_image(epub_path: &Path) -> io::Result<PathBuf> {
     let mut output = File::create(&cache_path)?;
     output.write_all(&data)?;
 
+    println!("{}", cache_path.to_string_lossy().to_string());
+
     Ok(cache_path)
 }
 

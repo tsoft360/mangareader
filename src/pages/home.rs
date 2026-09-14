@@ -40,7 +40,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
             if ui.add_sized([250.0, 45.0], Button::new("test")).clicked() {
                 let epub = EpubReader::new(
-                    "/home/dragon/.koma/Library/You.Bleed.Into.My.Colourless.World.epub"
+                    "/home/dragon/.koma/Library/You bleed into my colourless world/You.Bleed.Into.My.Colourless.World.epub"
                 );
 
                 let chapter = epub.unwrap().load_chapter(0).unwrap();
