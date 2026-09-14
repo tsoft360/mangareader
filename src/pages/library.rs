@@ -55,13 +55,18 @@ fn get_cover_path(entry: &Path, file_type: &BookType) -> Option<PathBuf> {
     }
 }
 
-fn extract_cover_image(epub_path: &Path) -> io::Result<PathBuf> {
+fn extract_cover_image(path: &Path) -> io::Result<PathBuf> {
     let cache_dir = dirs::data_local_dir()
         .unwrap_or_else(|| PathBuf::from("."))
         .join("koma")
         .join("covers");
 
     fs::create_dir_all(&cache_dir);
+
+    let epub_path = fs::read_dir(path)?
+        .next()
+        .unwrap()?
+        .path();
 
     let mut hasher = Sha256::new();
     hasher.update(epub_path.to_string_lossy().as_bytes());
@@ -81,9 +86,9 @@ fn extract_cover_image(epub_path: &Path) -> io::Result<PathBuf> {
 
     for i in 0..archive.len() {
         let file = archive.by_index(i)?;
-        let name = file.name().to_lowercase();
+        let name = file.name();
 
-        if name.contains("cover.")
+        if name.contains("OEBPS/Images/CoverDesign.")
             && (
                 name.ends_with(".jpg")
                     || name.ends_with(".jpeg")
