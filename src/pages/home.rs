@@ -43,8 +43,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                     "/home/dragon/.koma/Library/You bleed into my colourless world/You.Bleed.Into.My.Colourless.World.epub"
                 );
 
-                let chapter = epub.unwrap().load_chapter(0).unwrap();
-                println!("{}", chapter);
+                println!("{}", epub.unwrap().chapter_content);
             }
             
             ui.add_space(10.0);
