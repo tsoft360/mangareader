@@ -189,6 +189,11 @@ pub fn scan_library(path: impl AsRef<Path>) -> Vec<LibraryEntry> {
 }
 
 pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
+    match app.reader_state {
+        ReaderKind::Manga(m) => let reader: &mut ReaderState = &mut m;
+        ReaderKind::Epub(e) => let reader: &mut EpubReader = &mut e;
+    }
+
     egui::TopBottomPanel::top("library toolbar").show(ctx, |ui| {
         ui.horizontal(|ui| {
             if ui.button("< Home").clicked() {
@@ -211,9 +216,13 @@ pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
                     );
 
                     if response.clicked() {
-                        app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0);
+                        app.reader_state = app::ReaderKind::Manga(ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0));
+                         match app.reader_state {
+                            ReaderKind::Manga(m) => let reader: &mut ReaderState = &mut m;
+                            ReaderKind::Epub(e) => let reader: &mut EpubReader = &mut e;
+                        }
+                        reader.load_texture(ctx);
                         app.current_page = Screen::Reader;
-                        app.reader_state.load_texture(ctx);
                     }
                 }
 

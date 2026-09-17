@@ -27,24 +27,28 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
                 let progress = progress::load().unwrap();
-                app.reader_state = ReaderState::new(
+                app.reader_state = ReaderKind::Manga(ReaderState::new(
                     progress.manga_path.to_string_lossy().to_string(), 
                     progress.chapter, 
                     progress.page
-                );
-                app.reader_state.load_texture(ctx);
+                ));
+                match app.reader_state {
+                    ReaderKind::Manga(m) => let reader: &mut ReaderState = &mut m;
+                    ReaderKind::Epub(e) => let reader: &mut EpubReader = &mut e;
+                }
+                reader.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }
 
             ui.add_space(10.0);
 
-            if ui.add_sized([250.0, 45.0], Button::new("test")).clicked() {
-                let epub = EpubReader::new(
-                    "/home/dragon/.koma/Library/You bleed into my colourless world/You.Bleed.Into.My.Colourless.World.epub"
-                );
+            // if ui.add_sized([250.0, 45.0], Button::new("test")).clicked() {
+            //     let epub = EpubReader::new(
+            //         "/home/dragon/.koma/Library/You bleed into my colourless world/You.Bleed.Into.My.Colourless.World.epub"
+            //     );
 
-                println!("{}", epub.unwrap().chapter_content);
-            }
+            //     println!("{}", epub.unwrap().chapter_content);
+            // }
             
             ui.add_space(10.0);
 

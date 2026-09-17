@@ -3,7 +3,12 @@ use app::{ MangaApp, Screen, ReaderState };
 use eframe::egui::Context;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
-    let reader: &mut ReaderState = &mut app.reader_state;
+    match app.reader_state {
+        ReaderKind::Manga(m) => let reader: &mut ReaderState = &mut m;
+        
+        ReaderKind::Epub(e) => let reader: &mut EpubReader = &mut e;
+    }
+    // let reader: &mut ReaderState = &mut app.reader_state;
     let scroll = ctx.input(|i| i.raw_scroll_delta.y); 
 
     if scroll < 0.0 {
