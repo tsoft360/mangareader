@@ -126,14 +126,9 @@ impl ReaderState {
     }
 }
 
-pub enum ReaderKind {
-    Manga(ReaderState),
-    Epub(EpubReader),
-}
-
 pub struct MangaApp {
     pub current_page: Screen,
-    pub reader_state: ReaderKind,
+    pub reader_state: ReaderState,
     pub library: Vec<LibraryEntry>,
 }
 
@@ -141,7 +136,7 @@ impl Default for MangaApp {
     fn default() -> Self {
         Self {
             current_page: Screen::Home,
-            reader_state: ReaderKind::Manga(ReaderState::new("".to_string(), 0, 0)),
+            reader_state: ReaderState::new("".to_string(), 0, 0),
             library: Vec::new(),
         }
     }

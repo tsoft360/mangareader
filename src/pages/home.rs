@@ -27,16 +27,12 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
 
             if ui.add_sized([250.0, 45.0], Button::new("Continue Reading")).clicked() {
                 let progress = progress::load().unwrap();
-                app.reader_state = ReaderKind::Manga(ReaderState::new(
+                app.reader_state = ReaderState::new(
                     progress.manga_path.to_string_lossy().to_string(), 
                     progress.chapter, 
                     progress.page
-                ));
-                match app.reader_state {
-                    ReaderKind::Manga(m) => let reader: &mut ReaderState = &mut m;
-                    ReaderKind::Epub(e) => let reader: &mut EpubReader = &mut e;
-                }
-                reader.load_texture(ctx);
+                );
+                app.reader_state.load_texture(ctx);
                 app.current_page = Screen::Reader;
             }
 
