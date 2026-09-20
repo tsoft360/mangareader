@@ -13,6 +13,7 @@ pub enum Screen {
     Library,
     Reader,
     Settings,
+    ebookreader,
 }
 
 pub struct ReaderState {
@@ -129,6 +130,7 @@ impl ReaderState {
 pub struct MangaApp {
     pub current_page: Screen,
     pub reader_state: ReaderState,
+    pub epub_reader: EpubReader,
     pub library: Vec<LibraryEntry>,
 }
 
@@ -137,6 +139,7 @@ impl Default for MangaApp {
         Self {
             current_page: Screen::Home,
             reader_state: ReaderState::new("".to_string(), 0, 0),
+            epub_reader: EpubReader::new("/home/dragon/.local/share/koma/temp.epub").expect("142, 13 app.rs"),
             library: Vec::new(),
         }
     }

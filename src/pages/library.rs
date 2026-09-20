@@ -1,5 +1,7 @@
 use crate::app;
+use crate::reader;
 use app::{MangaApp, Screen, ReaderState};
+use reader::epub_reader::EpubReader;
 use eframe::egui;
 use std::path::{PathBuf, Path};
 use std::fs::{self, File};
@@ -173,13 +175,27 @@ pub fn scan_library(path: impl AsRef<Path>) -> Vec<LibraryEntry> {
         let title = entry.file_name().to_string_lossy().to_string();
 
         let file_type = check_book_type(&entry.path().to_path_buf());
+        let mut path = "".into();
+
+        match file_type {
+            BookType::Epub => {
+                for i in std::fs::read_dir(entry.path()).unwrap() {
+                    let i = i.expect("oke");
+                    if i.path().extension().is_some_and(|ext| ext == "epub") {
+                        path = i.path();
+                    }
+                }
+            },
+            BookType::Images => path = entry.path(),
+            BookType::Unsure => { path = "".into(); },
+        }
 
         let cover_path = get_cover_path(&entry.path(), &file_type);
 
         library.push(LibraryEntry {
             title,
             cover_path: cover_path.expect("174,14 library.rs"),
-            path: entry.path(),
+            path,
             cover: None,
             file_type,
         });
@@ -213,9 +229,18 @@ pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
                     );
 
                     if response.clicked() {
-                        app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0);
-                        app.reader_state.load_texture(ctx);
-                        app.current_page = Screen::Reader;
+                        match manga.file_type {
+                            BookType::Images => {
+                                app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0);
+                                app.reader_state.load_texture(ctx);
+                                app.current_page = Screen::Reader;
+                            },
+                            BookType::Epub => {
+                                app.epub_reader = EpubReader::new(manga.path.clone()).expect("225, 33 library");
+                                app.current_page = Screen::ebookreader;
+                            },
+                            BookType::Unsure => println!("reader is not sure what type of book this is. if this happend something is seriouslly wrong")
+                        }
                     }
                 }
 

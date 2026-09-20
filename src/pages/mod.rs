@@ -2,6 +2,7 @@ pub mod home;
 pub mod library;
 pub mod reader;
 pub mod settings;
+pub mod ebookreader;
 
 
 use eframe::egui::Context;
@@ -14,5 +15,6 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         Screen::Library => library::show(ctx, app), 
         Screen::Reader => reader::show(ctx, app),
         Screen::Settings => settings::show(ctx, app),
+        Screen::ebookreader => ebookreader::show(ctx, app),
     }
 }

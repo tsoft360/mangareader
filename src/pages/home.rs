@@ -46,7 +46,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
             //     println!("{}", epub.unwrap().chapter_content);
             // }
             
-            ui.add_space(10.0);
+            // ui.add_space(10.0);
 
             if ui.add_sized([250.0, 45.0], Button::new("Library")).clicked() {
                 app.library = library::scan_library("/home/dragon/.koma/Library");
