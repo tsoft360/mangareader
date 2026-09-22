@@ -1,6 +1,7 @@
 use crate::app;
 use app::{MangaApp, Screen};
 use eframe::egui::Context;
+use hyper_render;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
     let reader = &mut app.epub_reader;
@@ -24,7 +25,8 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         ui.separator();
     });
 
-    egui::CentralPanel::default().show(ctx, |ui| {
-        ui.label(reader.chapter_content.clone());
-    });
+    // display only raw html
+    // egui::CentralPanel::default().show(ctx, |ui| {
+    //     ui.label(reader.chapter_content.clone());
+    // });
 }

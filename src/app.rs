@@ -16,12 +16,18 @@ pub enum Screen {
     ebookreader,
 }
 
+pub enum BookOrImage {
+    Epub,
+    Images,
+}
+
 pub struct ReaderState {
     pub manga: Manga,
     pub path: String,
     pub current_chapter: usize,
     pub current_page: usize,
     pub texture: Option<egui::TextureHandle>,
+    pub cur_type: BookOrImage,
 }
 
 impl ReaderState {
@@ -35,6 +41,7 @@ impl ReaderState {
                 current_chapter: chapter,
                 current_page: page,
                 texture: Option::None,
+                cur_type: BookOrImage::Images,
             }
         } else {
             let path = "".to_string();
@@ -44,6 +51,7 @@ impl ReaderState {
                 current_chapter: 0,
                 current_page: 0,
                 texture: Option::None,
+                cur_type: BookOrImage::Images,
             }
         }
     }
@@ -64,7 +72,7 @@ impl ReaderState {
         } else {
             self.current_page -= 1;
             self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-            self.load_texture(ctx)
+            self.load_texture(ctx);
         }
     }
 
@@ -72,7 +80,7 @@ impl ReaderState {
         self.current_chapter += 1;
         self.current_page = 0;
         self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-        self.load_texture(ctx)
+        self.load_texture(ctx);
     }
 
     pub fn previous_chapter(&mut self, ctx: &Context) {
@@ -80,14 +88,28 @@ impl ReaderState {
             self.current_chapter -= 1;
             self.current_page = self.manga.chapters[self.current_chapter].pages.len() - 1;
             self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-            self.load_texture(ctx)
+            self.load_texture(ctx);
         }
     }
 
-    pub fn load_texture(&mut self, ctx: &egui::Context) {
-        let image = ImageReader::open(self.path.clone()).unwrap().decode();
+    pub fn load_texture(&mut self, ctx: &egui::Context, app: MangaApp) -> Result<(), Box<dyn std::error::Error>> {
+        let image;
+        match self.cur_type {
+            BookOrImage::Images => image = ImageReader::open(self.path.clone()).unwrap().decode().unwrap(),
+            BookOrImage::Epub => {
+                let reader = app.epub_reader;
+                let html = &reader.chapter_content;
+                let config = hyper_render::Config::new()
+                    .width(800)
+                    .height(1200)
+                    .auto_height(true);
 
-        let rgba = image.unwrap().to_rgba8();
+                let png = hyper_render::render_to_png(html, config);
+
+                image = image::load_from_memory(&png)?;
+            },
+        }
+        let rgba = image.to_rgba8();
 
         let size = [
             rgba.width() as usize,
@@ -106,6 +128,8 @@ impl ReaderState {
                 color_image,
                 egui::TextureOptions::default(),
             ));
+
+        Ok(())
     }
 
     pub fn save_progress(&self) {
