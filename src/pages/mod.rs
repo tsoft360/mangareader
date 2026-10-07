@@ -15,6 +15,6 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         Screen::Library => library::show(ctx, app), 
         Screen::Reader => reader::show(ctx, app),
         Screen::Settings => settings::show(ctx, app),
-        Screen::ebookreader => ebookreader::show(ctx, app),
+        Screen::EbookReader => ebookreader::show(ctx, app),
     }
 }

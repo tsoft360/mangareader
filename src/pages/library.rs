@@ -232,12 +232,12 @@ pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
                         match manga.file_type {
                             BookType::Images => {
                                 app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0);
-                                app.reader_state.load_texture(ctx);
+                                app.reader_state.load_texture(ctx, &app.epub_reader);
                                 app.current_page = Screen::Reader;
                             },
                             BookType::Epub => {
                                 app.epub_reader = EpubReader::new(manga.path.clone()).expect("225, 33 library");
-                                app.current_page = Screen::ebookreader;
+                                app.current_page = Screen::EbookReader;
                             },
                             BookType::Unsure => println!("reader is not sure what type of book this is. if this happend something is seriouslly wrong")
                         }

@@ -8,11 +8,11 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
     let scroll = ctx.input(|i| i.raw_scroll_delta.y); 
 
     if scroll < 0.0 {
-        reader.next_page(ctx);
+        reader.next_page(ctx, &app.epub_reader);
     }
 
     if scroll > 0.0 {
-        reader.previous_page(ctx);
+        reader.previous_page(ctx, &app.epub_reader);
     }
 
     egui::TopBottomPanel::top("reader_toolbar").show(ctx, |ui| {

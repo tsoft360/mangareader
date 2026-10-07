@@ -25,8 +25,8 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
         ui.separator();
     });
 
-    // display only raw html
-    // egui::CentralPanel::default().show(ctx, |ui| {
-    //     ui.label(reader.chapter_content.clone());
-    // });
+    //display only raw html
+    egui::CentralPanel::default().show(ctx, |ui| {
+        ui.label(reader.chapter_content.clone());
+    });
 }

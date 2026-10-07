@@ -3,3 +3,4 @@
 /tools/komikku.db-shm
 /tools/komikku.db-wal
 /tools/to_parse
+/src/bin/*
