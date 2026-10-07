@@ -32,7 +32,7 @@ pub fn show(ctx: &Context, app: &mut MangaApp) {
                     progress.chapter, 
                     progress.page
                 );
-                app.reader_state.load_texture(ctx, &app.epub_reader);
+                let _ = app.reader_state.load_texture(ctx, &app.epub_reader);
                 app.current_page = Screen::Reader;
             }
 

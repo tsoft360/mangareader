@@ -62,7 +62,7 @@ impl ReaderState {
             self.next_chapter(ctx, reader);
         } else {
             self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-            self.load_texture(ctx, reader);
+            let _ = self.load_texture(ctx, reader);
         }
     }
 
@@ -72,7 +72,7 @@ impl ReaderState {
         } else {
             self.current_page -= 1;
             self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-            self.load_texture(ctx, reader);
+            let _ = self.load_texture(ctx, reader);
         }
     }
 
@@ -80,7 +80,7 @@ impl ReaderState {
         self.current_chapter += 1;
         self.current_page = 0;
         self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-        self.load_texture(ctx, reader);
+        let _ = self.load_texture(ctx, reader);
     }
 
     pub fn previous_chapter(&mut self, ctx: &Context, reader: &EpubReader) {
@@ -88,7 +88,7 @@ impl ReaderState {
             self.current_chapter -= 1;
             self.current_page = self.manga.chapters[self.current_chapter].pages.len() - 1;
             self.path = self.manga.chapters[self.current_chapter].pages[self.current_page].to_string_lossy().to_string();
-            self.load_texture(ctx, reader);
+            let _ = self.load_texture(ctx, reader);
         }
     }
 
@@ -104,7 +104,6 @@ impl ReaderState {
                     .auto_height(true);
 
                 let png = hyper_render::render_to_png(html, config)?;
-
                 image = image::load_from_memory(&png)?;
             },
         }
@@ -181,6 +180,6 @@ impl eframe::App for MangaApp {
         &mut self,
         _gl: Option<&eframe::glow::Context>,
     ) {
-        &self.reader_state.save_progress();
+        let _ = &self.reader_state.save_progress();
     }
 }

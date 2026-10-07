@@ -63,7 +63,7 @@ fn extract_cover_image(path: &Path) -> io::Result<PathBuf> {
         .join("koma")
         .join("covers");
 
-    fs::create_dir_all(&cache_dir);
+    let _ = fs::create_dir_all(&cache_dir);
 
     let epub_path = fs::read_dir(path)?
         .next()
@@ -232,7 +232,7 @@ pub fn show(ctx: &egui::Context, app: &mut MangaApp) {
                         match manga.file_type {
                             BookType::Images => {
                                 app.reader_state = ReaderState::new(manga.path.to_string_lossy().to_string(), 0, 0);
-                                app.reader_state.load_texture(ctx, &app.epub_reader);
+                                let _ = app.reader_state.load_texture(ctx, &app.epub_reader);
                                 app.current_page = Screen::Reader;
                             },
                             BookType::Epub => {

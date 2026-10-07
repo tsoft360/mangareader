@@ -4,7 +4,6 @@ use eframe::egui::Context;
 
 pub fn show(ctx: &Context, app: &mut MangaApp) {
     let reader: &mut ReaderState = &mut app.reader_state;
-    // let reader: &mut ReaderState = &mut app.reader_state;
     let scroll = ctx.input(|i| i.raw_scroll_delta.y); 
 
     if scroll < 0.0 {
